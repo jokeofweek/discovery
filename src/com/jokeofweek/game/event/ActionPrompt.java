@@ -4,41 +4,34 @@ import com.jokeofweek.data.GameData;
 import com.jokeofweek.data.map.Map;
 import com.jokeofweek.game.GameContainer;
 import com.jokeofweek.game.state.GameState;
+import com.jokeofweek.lib.CSIColor;
 import com.jokeofweek.lib.CharKey;
 import com.jokeofweek.lib.WSwingConsoleInterface;
 
-public class ActionPromptEvent extends PromptEvent {
+public class ActionPrompt extends Prompt {
 
 	private static final long serialVersionUID = -299511068651246174L;
 
-	public ActionPromptEvent(PlayerInputEvent event) {
+	public ActionPrompt(PlayerInputEvent event) {
 		super(event);
 	}
 
 	@Override
-	public boolean doEvent(GameContainer container, WSwingConsoleInterface csi) {
+	public void printMessage(GameContainer container,
+			WSwingConsoleInterface csi) {
+		csi.print(0, 0, "Direction to perform action?", CSIColor.BLACK,
+				CSIColor.WHITE);
+	}
+
+	@Override
+	public int handlePrompt(GameContainer container,
+			WSwingConsoleInterface csi) {
 		GameData gameData = GameData.getInstance();
 		int x = gameData.getPlayer().getEntity().getPosition().x;
 		int y = gameData.getPlayer().getEntity().getPosition().y;
 		boolean directionKey = true;
 
 		switch (csi.inkey().code) {
-		case CharKey.N7:
-			x--;
-			y--;
-			break;
-		case CharKey.N9:
-			x++;
-			y--;
-			break;
-		case CharKey.N1:
-			x--;
-			y++;
-			break;
-		case CharKey.N3:
-			x++;
-			y++;
-			break;
 		case CharKey.N4:
 		case CharKey.LARROW:
 			x--;
@@ -59,23 +52,19 @@ public class ActionPromptEvent extends PromptEvent {
 			directionKey = false;
 		}
 
-		int modifier = 0;
+
 		if (directionKey) {
 			if (x >= 0 & y >= 0 & x < Map.MAP_SIZE && y < Map.MAP_SIZE) {
 				if (gameData.getMap().getTile(x, y).getResource()
 						.hasAction()) {
 					gameData.getMap().getTile(x, y).getResource()
 							.doAction(gameData.getMap().getTile(x, y));
-					modifier = Math.abs(gameData.getPlayer().getEntity().getPosition().x - x) +  Math.abs(gameData.getPlayer().getEntity().getPosition().y - y);
+					return 10;
 				}
 			}
 		}
-		
-		((GameState) container.getCurrentState()).promptingForDirection = false;
-		getInputEvent().setTicks(gameData.getTime().getTicks() + (modifier * 10));
-		gameData.getTime().getScheduler().addEvent(getInputEvent());
-		
-		return false;
+
+		return 0;
 	}
 
 }

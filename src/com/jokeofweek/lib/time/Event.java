@@ -35,10 +35,8 @@ public abstract class Event implements Serializable, Comparable<Event> {
 	 * 
 	 * @param container
 	 * @param csi
-	 * @return A boolean saying whether we should keep iterating through events
-	 *         of the same tick, or if we should break out and render first.
 	 */
-	public abstract boolean doEvent(GameContainer container,
+	public abstract void doEvent(GameContainer container,
 			WSwingConsoleInterface csi);
 
 	@Override

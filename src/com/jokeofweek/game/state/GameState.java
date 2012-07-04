@@ -7,6 +7,7 @@ import com.jokeofweek.data.map.Fov;
 import com.jokeofweek.data.map.Map;
 import com.jokeofweek.data.map.Tile;
 import com.jokeofweek.game.GameContainer;
+import com.jokeofweek.game.event.Prompt;
 import com.jokeofweek.gui.Border;
 import com.jokeofweek.gui.ListBox;
 import com.jokeofweek.gui.ListItem;
@@ -33,7 +34,7 @@ public class GameState extends AbstractState {
 	public boolean inMenu = false;
 	private ListBox menuBox;
 
-	public boolean promptingForDirection = false;
+	private Prompt prompt = null;
 
 	public boolean inDev = false;
 
@@ -99,8 +100,9 @@ public class GameState extends AbstractState {
 			CharKey key = csi.inkey();
 			menuBox.update(container, csi, key);
 			return;
-		} else if (promptingForDirection) {
-			gameData.getTime().doTick(container, csi);
+		} else if (getPrompt() != null) {
+			getPrompt().doPrompt(container, csi);
+			setPrompt(null);
 		} else {
 			renderFlag = false;
 			while (!renderFlag) {
@@ -147,8 +149,10 @@ public class GameState extends AbstractState {
 
 		// Render menu
 		playerMenuBorder.render(container, csi);
+		
 		csi.print(playerMenuBorder.getPosition().x + 1,
 				playerMenuBorder.getPosition().y + 1, player.getName());
+		
 		csi.print(
 				playerMenuBorder.getPosition().x + 1,
 				playerMenuBorder.getPosition().y
@@ -165,12 +169,11 @@ public class GameState extends AbstractState {
 					CSIColor.WHITE);
 			csi.print(0, 1, "Seed: " + GameData.getInstance().getMapSeed());
 		}
-		
 
-		if (promptingForDirection) {
-			csi.print(0, 0, "Direction to perform action?", CSIColor.BLACK, CSIColor.WHITE);
+		if (getPrompt() != null) {
+			getPrompt().printMessage(container, csi);
 		}
-		
+
 		if (inMenu) {
 			menuBox.render(container, csi);
 		}
@@ -211,6 +214,14 @@ public class GameState extends AbstractState {
 
 	public Camera getCamera() {
 		return this.camera;
+	}
+
+	public Prompt getPrompt() {
+		return prompt;
+	}
+
+	public void setPrompt(Prompt prompt) {
+		this.prompt = prompt;
 	}
 
 }

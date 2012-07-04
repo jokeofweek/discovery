@@ -22,7 +22,7 @@ public class GameData implements Serializable {
 	private Player player = new Player();
 	
 	// Time
-	private Time time = new Time();
+	private Time time;
 	
 	public static GameData getInstance() {
 		return instance;
@@ -50,7 +50,7 @@ public class GameData implements Serializable {
 		
 		this.player.getEntity().setPosition(new Position(35, 50));
 		
-		this.time.getScheduler().addEvent(new PlayerInputEvent(time.getTicks() + 10));
+		this.time = new Time();
 	}
 	
 	public Map getMap(){

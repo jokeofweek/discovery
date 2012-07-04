@@ -15,10 +15,8 @@ public class Scheduler {
 	
 	public void doTick(GameContainer container, WSwingConsoleInterface csi, Time time){
 		long current = time.getTicks();
-		while (events.peek().getTicks() <= current) {
-			if (!events.remove().doEvent(container, csi)) {
-				break;
-			}
+		while (!events.isEmpty() && events.peek().getTicks() <= current) {
+			events.remove().doEvent(container, csi);
 		}
 	}
 	
